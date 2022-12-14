@@ -12,7 +12,7 @@ const App = () => {
     // <Login />
     // <Map />
      // <Zonelist/>
-    <SignupVerification />
+    <SignupVerification /> 
   );
 };
 
