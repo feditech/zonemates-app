@@ -1,5 +1,12 @@
 import {initializeApp} from 'firebase/app';
-import {getAuth} from 'firebase/auth';
+import {getFirestore} from 'firebase/firestore';
+import {collection, addDoc} from 'firebase/firestore';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyAT7ZAnhCSOhnI8W8fZEloyhtNzl3YJ7L8',
   authDomain: 'zonemates-app-ec082.firebaseapp.com',
@@ -10,7 +17,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
+// Initialize Cloud Firestore and get a reference to the service
+const db = getFirestore(app);
 const auth = getAuth();
 
-export {auth};
+export {
+  auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  db,
+  collection,
+  addDoc,
+};

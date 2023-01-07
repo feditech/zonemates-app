@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
 import * as yup from 'yup';
 import {Formik} from 'formik';
-
-import {createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../config/Firebase';
+import {auth, createUserWithEmailAndPassword} from '../config/Firebase';
 import {
   StyleSheet,
   Text,
@@ -20,9 +18,9 @@ const phoneRegExp =
 const signupValidationSchema = yup.object().shape({
   name: yup
     .string()
-    .required('Name is Required')
     .min(2, 'Name is too short!')
-    .max(20, 'Name is too long!'),
+    .max(20, 'Name is too long!')
+    .required('Name is Required'),
   email: yup
     .string()
     .email('Please enter valid email')
@@ -38,10 +36,13 @@ const signupValidationSchema = yup.object().shape({
       .oneOf([yup.ref('password')], 'Both password need to be the same'),
   }),
 
-  phone: yup.string().matches(phoneRegExp, 'Phone number is not valid'),
+  phone: yup
+    .string()
+    .required('Phone is required')
+    .matches(phoneRegExp, 'Phone number is not valid'),
 });
 
-export default function Signup() {
+export default function Signup({navigation}) {
   var Logo = require('../../assets/Icons/Logo.png');
   return (
     <ScrollView>
@@ -52,9 +53,15 @@ export default function Signup() {
         </View>
 
         <Formik
-          initialValues={{email: '', password: ''}}
+          initialValues={{
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            phone: '',
+          }}
           validationSchema={signupValidationSchema}
-          onSubmit={(values) =>
+          onSubmit={values =>
             createUserWithEmailAndPassword(auth, values.email, values.password)
               .then(userCredential => {
                 // Signed in
@@ -144,6 +151,12 @@ export default function Signup() {
               <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
                 <Text style={styles.btntext}>Signup</Text>
               </TouchableOpacity>
+              <View style={styles.bottomText}>
+                <Text>Already Have an Account?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                  <Text style={styles.signupLink}> Login Here </Text>
+                </TouchableOpacity>
+              </View>
             </>
           )}
         </Formik>
@@ -191,7 +204,7 @@ const styles = StyleSheet.create({
     padding: 15,
     display: 'flex',
     justifyContent: 'center',
-    backgroundColor: '#105e26',
+    backgroundColor: '#081B33',
   },
   btntext: {
     textAlign: 'center',
@@ -200,5 +213,15 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
+  },
+  bottomText: {
+    marginTop: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  signupLink: {
+    color: '#081B33',
+    fontWeight: '800',
   },
 });
