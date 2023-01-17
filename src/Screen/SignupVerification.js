@@ -1,9 +1,5 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
-import * as yup from 'yup';
-import {Formik} from 'formik';
-import {signInWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../config/Firebase';
 import {
   StyleSheet,
   Text,
@@ -12,8 +8,40 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 
-export default function SignupVerification() {
+export default function SignupVerification({route, navigation}) {
+  const {data} = route.params;
+  // If null, no SMS has been sent
+  const [user, setUser] = useState(data);
+  const [confirm, setConfirm] = useState(null);
+  console.log(data);
+  useEffect(() => {
+    const sendVerificationCode = async () => {
+      const confirmation = await auth().verifyPhoneNumber(data.phone);
+      setConfirm(confirmation);
+    };
+    sendVerificationCode();
+  }, []);
+
+  async function confirmCode(code) {
+    try {
+      const credential = auth.PhoneAuthProvider.credential(
+        confirm.verificationId,
+        code,
+      );
+      let userData = await auth().currentUser.linkWithCredential(credential);
+      setUser(userData.user);
+      console.log("verified")
+    } catch (error) {
+      if (error.code == 'auth/invalid-verification-code') {
+        console.log('Invalid code.');
+      } else {
+        console.log('Account linking error');
+      }
+    }
+  }
+
   var Logo = require('../../assets/Icons/Logo.png');
   return (
     <View style={styles.container}>
@@ -23,14 +51,16 @@ export default function SignupVerification() {
       </View>
       <OTPInputView
         style={{width: '80%', height: 100, color: 'red'}}
-        pinCount={4}
+        pinCount={6}
         // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
-        // onCodeChanged = {code => { this.setState({code})}}
+        // onCodeChanged={code => {
+        //   setCode(code);
+        // }}
         autoFocusOnLoad={false}
         codeInputFieldStyle={styles.underlineStyleBase}
         codeInputHighlightStyle={styles.underlineStyleHighLighted}
         onCodeFilled={code => {
-          console.log(`Code is ${code}, you are good to go!`);
+          confirmCode(code);
         }}
       />
       <TouchableOpacity style={styles.btn}>
@@ -45,6 +75,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    color: 'red',
   },
   Logo: {
     width: 180,
@@ -73,6 +104,7 @@ const styles = StyleSheet.create({
   },
 
   underlineStyleBase: {
+    color: '#105e26',
     width: 30,
     height: 45,
     borderWidth: 0,

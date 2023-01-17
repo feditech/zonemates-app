@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import * as yup from 'yup';
 import {Formik} from 'formik';
-import {auth,signInWithEmailAndPassword} from '../config/Firebase';
 import {
   StyleSheet,
   Text,
@@ -25,7 +24,33 @@ const loginValidationSchema = yup.object().shape({
 
 export default function Login({navigation}) {
   var Logo = require('../../assets/Icons/Logo.png');
-  return (
+  const [loading, setLoading] = useState(false);
+
+  const userLogin = values => {
+    setLoading(true);
+    auth()
+      .signInWithEmailAndPassword(values.email, values.password)
+      .then(userCredential => {
+        // Signed in
+        const user = userCredential.user;
+        console.log('User has signin successfully');
+        setLoading(false);
+        navigation.navigate('home');
+        // ...
+      })
+      .catch(error => {
+        setLoading(false);
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
+  };
+
+  return loading ? (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#081B33" />
+    </View>
+  ) : (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={Logo} style={styles.Logo} />
       <View style={styles.headingContainer}>
@@ -34,21 +59,8 @@ export default function Login({navigation}) {
       <Formik
         initialValues={{email: '', password: ''}}
         validationSchema={loginValidationSchema}
-        onSubmit={values =>
-          signInWithEmailAndPassword(auth, values.email, values.password)
-            .then(userCredential => {
-              // Signed in
-              const user = userCredential.user;
-              console.log('User has signin successfully');
-              navigation.navigate('home');
-              // ...
-            })
-            .catch(error => {
-              const errorCode = error.code;
-              const errorMessage = error.message;
-              console.log(errorMessage);
-            })
-        }>
+        // onSubmit={values => userLogin(values, navigation)}
+        onSubmit={values => userLogin(values, navigation)}>
         {({
           handleChange,
           handleBlur,
