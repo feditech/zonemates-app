@@ -15,6 +15,8 @@ import {
 // const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+
+
 const phoneRegExp = /^\+92[0-9]{10}$/;
 const signupValidationSchema = yup.object().shape({
   name: yup
@@ -46,6 +48,8 @@ const signupValidationSchema = yup.object().shape({
 export default function Signup({navigation}) {
   var Logo = require('../../assets/Icons/Logo.png');
   const [loading, setLoading] = useState(false);
+  const verificationCode = Math.floor(100000 + Math.random() * 900000);
+ 
 
   const userSignup = values => {
     setLoading(true);
@@ -55,6 +59,7 @@ export default function Signup({navigation}) {
         // Signed in
         const user = userCredential.user;
         console.log('User authenticated');
+
         firestore()
           .collection('Users')
           .add(values)
@@ -84,7 +89,7 @@ export default function Signup({navigation}) {
       <ActivityIndicator size="large" color="#081B33" />
     </View>
   ) : (
-    <ScrollView contentContainerStyle={{display:'flex',backgroundColor:'red',margin: 0}}>
+    <ScrollView contentContainerStyle={{flex: 1, margin: 0}}>
       <View style={styles.container}>
         <Image source={Logo} style={styles.Logo} />
         <View style={styles.headingContainer}>
@@ -194,7 +199,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    height:'100%'
+    height: '100%',
   },
   Logo: {
     width: 180,
