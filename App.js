@@ -7,24 +7,35 @@ import SignupVerification from './src/Screen/SignupVerification';
 import Zonelist from './src/Screen/Zonelist';
 import {NavigationContainer} from '@react-navigation/native';
 const Stack = createNativeStackNavigator();
+import {QueryClient, QueryClientProvider} from 'react-query';
+
 const App = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="login"
-        screenOptions={{
-          headerShown: false,
-        }}>
-        <Stack.Screen name="login" component={Login} />
-        <Stack.Screen name="signup" component={Signup} />
-        <Stack.Screen
-          name="signupVerification"
-          component={SignupVerification}
-        />
-        <Stack.Screen name="home" component={Map} />
-        <Stack.Screen name="zonelist" component={Zonelist} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="login"
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Screen name="login" component={Login} />
+          <Stack.Screen name="signup" component={Signup} />
+          <Stack.Screen
+            name="signupVerification"
+            component={SignupVerification}
+          />
+          <Stack.Screen name="home" component={Map} />
+          <Stack.Screen name="zonelist" component={Zonelist} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </QueryClientProvider>
   );
 };
 

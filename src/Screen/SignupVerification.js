@@ -7,42 +7,47 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 export default function SignupVerification({route, navigation}) {
-  const {data} = route.params;
   // If null, no SMS has been sent
-  const [user, setUser] = useState(data);
-  const [confirm, setConfirm] = useState(null);
-  console.log(data);
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  async function onAuthStateChanged(user) {
+    
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
   useEffect(() => {
-    const sendVerificationCode = async () => {
-      const confirmation = await auth().verifyPhoneNumber(data.phone);
-      setConfirm(confirmation);
-    };
-    sendVerificationCode();
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
   }, []);
 
-  async function confirmCode(code) {
-    try {
-      const credential = auth.PhoneAuthProvider.credential(
-        confirm.verificationId,
-        code,
-      );
-      let userData = await auth().currentUser.linkWithCredential(credential);
-      setUser(userData.user);
-      console.log("verified")
-    } catch (error) {
-      if (error.code == 'auth/invalid-verification-code') {
-        console.log('Invalid code.');
-      } else {
-        console.log('Account linking error');
-      }
-    }
+  var Logo = require('../../assets/Icons/Logo.png');
+
+  if (initializing)
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#081B33" />
+      </View>
+    );
+
+  if (!user) {
+    return (
+      <View>
+        <Text>User not logged in</Text>
+      </View>
+    );
   }
 
-  var Logo = require('../../assets/Icons/Logo.png');
+  console.log('userrr', user);
+  const confirmCode = code => console.log(code);
+
   return (
     <View style={styles.container}>
       <Image source={Logo} style={styles.Logo} />
@@ -129,3 +134,29 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
+
+// useEffect(() => {
+//   const sendVerificationCode = async () => {
+//     const confirmation = await auth().verifyPhoneNumber(data.phone);
+//     setConfirm(confirmation);
+//   };
+//   sendVerificationCode();
+// }, []);
+
+// async function confirmCode(code) {
+//   try {
+//     const credential = auth.PhoneAuthProvider.credential(
+//       confirm.verificationId,
+//       code,
+//     );
+//     let userData = await auth().currentUser.linkWithCredential(credential);
+//     setUser(userData.user);
+//     console.log("verified")
+//   } catch (error) {
+//     if (error.code == 'auth/invalid-verification-code') {
+//       console.log('Invalid code.');
+//     } else {
+//       console.log('Account linking error');
+//     }
+//   }
+// }

@@ -16,8 +16,11 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
+import useVerificationMutation from '../restapis/verification/send-verification-email';
 
-const phoneRegExp = /^\+92[0-9]{10}$/;
+import http from '../restapis';
+import axios from 'axios';
+
 const signupValidationSchema = yup.object().shape({
   name: yup
     .string()
@@ -32,26 +35,20 @@ const signupValidationSchema = yup.object().shape({
     .string()
     .min(8, ({min}) => `Password must be at least ${min} characters`)
     .required('Password is required'),
-  confirmPassword: yup.string().when('password', {
-    is: val => (val && val.length > 0 ? true : false),
-    then: yup
-      .string()
-      .oneOf([yup.ref('password')], 'Both password need to be the same'),
-  }),
-
-  phone: yup
-    .string()
-    .required('Phone is required')
-    .matches(phoneRegExp, 'Phone number is not valid'),
 });
 
 export default function Signup({navigation}) {
   var Logo = require('../../assets/Icons/Logo.png');
   const [loading, setLoading] = useState(false);
   const verificationCode = Math.floor(100000 + Math.random() * 900000);
- 
 
-  const userSignup = values => {
+  const {mutate: sendVerification} = useVerificationMutation();
+
+  // const userSignup = values => {
+  //   sendVerification({to: values.email, verificationCode: verificationCode});
+  // };
+
+  const userSignup = async values => {
     setLoading(true);
     auth()
       .createUserWithEmailAndPassword(values.email, values.password)
@@ -62,14 +59,21 @@ export default function Signup({navigation}) {
 
         firestore()
           .collection('Users')
-          .add(values)
-          .then(async e => {
+          .add({
+            ...values,
+            isVerified: false,
+            verificationCode: verificationCode,
+            codeTime: new Date(),
+          })
+          .then(e => {
             console.log('User added! to firebase');
             setLoading(false);
-            navigation.navigate('signupVerification', {data: values});
+            sendVerification(values.email, verificationCode);
+            navigation.navigate('signupVerification');
+            // navigation.navigate('signupVerification', {data: values});
           })
           .catch(error => {
-            console.log('firestore', error);
+            console.log('firestore error', error);
             setLoading(false);
           });
         //   const docRef = await addDoc(collection(db, 'users'), values);
@@ -101,12 +105,9 @@ export default function Signup({navigation}) {
             name: '',
             email: '',
             password: '',
-            phone: '',
           }}
           validationSchema={signupValidationSchema}
-          onSubmit={values => userSignup(values, navigation)}
-          // onSubmit= { values => console.log(values.email)}
-        >
+          onSubmit={values => userSignup(values)}>
           {({
             handleChange,
             handleBlur,
@@ -153,29 +154,6 @@ export default function Signup({navigation}) {
                 {errors.password && touched.password && (
                   <Text style={styles.errorText}>{errors.password}</Text>
                 )}
-                {/* <TextInput
-                  style={styles.TextInput}
-                  name="confirmPassword"
-                  placeholder="Confirm Password"
-                  onChangeText={handleChange('confirmPassword')}
-                  onBlur={handleBlur('confirmPassword')}
-                  value={values.confirmPassword}
-                  secureTextEntry
-                />
-                {errors.confirmPassword && touched.confirmPassword && (
-                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                )}
-                <TextInput
-                  style={styles.TextInput}
-                  name="phone"
-                  placeholder="Phone"
-                  onChangeText={handleChange('phone')}
-                  onBlur={handleBlur('phone')}
-                  value={values.phone}
-                />
-                {errors.phone && touched.phone && (
-                  <Text style={styles.errorText}>{errors.phone}</Text>
-                )} */}
               </View>
               <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
                 <Text style={styles.btntext}>Signup</Text>
@@ -255,3 +233,42 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
+
+// const phoneRegExp = /^\+92[0-9]{10}$/;
+// confirmPassword: yup.string().when('password', {
+//   is: val => (val && val.length > 0 ? true : false),
+//   then: yup
+//     .string()
+//     .oneOf([yup.ref('password')], 'Both password need to be the same'),
+// }),
+
+// phone: yup
+//   .string()
+//   .required('Phone is required')
+//   .matches(phoneRegExp, 'Phone number is not valid'),
+
+{
+  /* <TextInput
+                  style={styles.TextInput}
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  value={values.confirmPassword}
+                  secureTextEntry
+                />
+                {errors.confirmPassword && touched.confirmPassword && (
+                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                )}
+                <TextInput
+                  style={styles.TextInput}
+                  name="phone"
+                  placeholder="Phone"
+                  onChangeText={handleChange('phone')}
+                  onBlur={handleBlur('phone')}
+                  value={values.phone}
+                />
+                {errors.phone && touched.phone && (
+                  <Text style={styles.errorText}>{errors.phone}</Text>
+                )} */
+}
