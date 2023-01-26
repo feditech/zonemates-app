@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import * as yup from 'yup';
 import {Formik} from 'formik';
-import { signInWithEmailAndPassword } from "firebase/auth";
-import {auth} from '../config/Firebase';
 import {
   StyleSheet,
   Text,
@@ -10,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
 
 const loginValidationSchema = yup.object().shape({
@@ -23,10 +22,36 @@ const loginValidationSchema = yup.object().shape({
     .required('Password is required'),
 });
 
-export default function Login() {
+export default function Login({navigation}) {
   var Logo = require('../../assets/Icons/Logo.png');
-  return (
+  const [loading, setLoading] = useState(false);
+
+  const userLogin = values => {
+    setLoading(true);
+    auth()
+      .signInWithEmailAndPassword(values.email, values.password)
+      .then(userCredential => {
+        // Signed in
+        const user = userCredential.user;
+        console.log('User has signin successfully');
+        setLoading(false);
+        navigation.navigate('home');
+        // ...
+      })
+      .catch(error => {
+        setLoading(false);
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
+  };
+
+  return loading ? (
     <View style={styles.container}>
+      <ActivityIndicator size="large" color="#081B33" />
+    </View>
+  ) : (
+    <ScrollView contentContainerStyle={styles.container}>
       <Image source={Logo} style={styles.Logo} />
       <View style={styles.headingContainer}>
         <Text style={styles.heading}>Welcome Back Mate!</Text>
@@ -34,19 +59,8 @@ export default function Login() {
       <Formik
         initialValues={{email: '', password: ''}}
         validationSchema={loginValidationSchema}
-        onSubmit={values => signInWithEmailAndPassword(auth, values.email, values.password)
-          .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
-            console.log("User has signin successfully")
-            
-            // ...
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorMessage)
-          })}>
+        // onSubmit={values => userLogin(values, navigation)}
+        onSubmit={values => userLogin(values, navigation)}>
         {({
           handleChange,
           handleBlur,
@@ -86,18 +100,27 @@ export default function Login() {
             <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
               <Text style={styles.btntext}>Login</Text>
             </TouchableOpacity>
+
+            <View style={styles.bottomText}>
+              <Text>Don't Have an Account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('signup')}>
+                <Text style={styles.signupLink}> Signup Here </Text>
+              </TouchableOpacity>
+            </View>
           </>
         )}
       </Formik>
-    </View>
+    </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    minHeight: '100%',
   },
   Logo: {
     width: 180,
@@ -132,11 +155,24 @@ const styles = StyleSheet.create({
     padding: 15,
     display: 'flex',
     justifyContent: 'center',
-    backgroundColor: '#105e26',
+    backgroundColor: '#081B33',
   },
   btntext: {
     textAlign: 'center',
     fontSize: 15,
     color: '#fff',
+  },
+  bottomText: {
+    marginTop: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+  },
+  signupLink: {
+    color: '#081B33',
+    fontWeight: '800',
   },
 });

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "393941099307",
+    "project_id": "zonemates-app-698b9",
+    "storage_bucket": "zonemates-app-698b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:393941099307:android:102c1d4c10ac020af41b6e",
+        "android_client_info": {
+          "package_name": "com.mgzoneapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "393941099307-touqac68o4b9e7ak15t88eam58k8cho2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCl1lvYjWAphLxlJCE5lTZqtQTKDplcUyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "393941099307-touqac68o4b9e7ak15t88eam58k8cho2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
