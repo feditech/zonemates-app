@@ -49,27 +49,32 @@ export default function Signup({navigation}) {
   // };
 
   const userSignup = async values => {
+   
     setLoading(true);
     auth()
       .createUserWithEmailAndPassword(values.email, values.password)
       .then(async userCredential => {
         // Signed in
         const user = userCredential.user;
-        console.log('User authenticated');
+        const id = user.uid;
+        console.log('User authenticated', user.uid);
 
         firestore()
-          .collection('Users')
-          .add({
+          .collection('users')
+          .doc(id)
+          .set({
             ...values,
             isVerified: false,
             verificationCode: verificationCode,
-            codeTime: new Date(),
+            codeTime: Date.now(),
+            id: id,
+            type: 'gamer',
           })
           .then(e => {
             console.log('User added! to firebase');
             setLoading(false);
-            sendVerification(values.email, verificationCode);
-            navigation.navigate('signupVerification');
+            sendVerification({to: values.email, verificationCode});
+            navigation.replace('signupVerification');
             // navigation.navigate('signupVerification', {data: values});
           })
           .catch(error => {

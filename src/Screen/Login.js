@@ -9,8 +9,10 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
-
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 const loginValidationSchema = yup.object().shape({
   email: yup
     .string()
@@ -35,7 +37,7 @@ export default function Login({navigation}) {
         const user = userCredential.user;
         console.log('User has signin successfully');
         setLoading(false);
-        navigation.navigate('home');
+        navigation.replace('home');
         // ...
       })
       .catch(error => {

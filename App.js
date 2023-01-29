@@ -6,8 +6,51 @@ import Signup from './src/Screen/Signup';
 import SignupVerification from './src/Screen/SignupVerification';
 import Zonelist from './src/Screen/Zonelist';
 import {NavigationContainer} from '@react-navigation/native';
-const Stack = createNativeStackNavigator();
 import {QueryClient, QueryClientProvider} from 'react-query';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+const Stack = createNativeStackNavigator();
+
+const Tab = createBottomTabNavigator();
+
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#081B33',
+      }}>
+      <Tab.Screen
+        name="ZoneList"
+        component={Zonelist}
+        options={{
+          tabBarLabel: 'ZoneList',
+          tabBarIcon: ({color, size}) => (
+            <MaterialCommunityIcons
+              name="home"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Map"
+        component={Map}
+        options={{
+          tabBarLabel: 'Map',
+          tabBarIcon: ({color, size}) => (
+            <MaterialCommunityIcons
+              name="map"
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 const App = () => {
   const queryClient = new QueryClient({
@@ -31,8 +74,8 @@ const App = () => {
             name="signupVerification"
             component={SignupVerification}
           />
-          <Stack.Screen name="home" component={Map} />
-          <Stack.Screen name="zonelist" component={Zonelist} />
+          <Stack.Screen name="home" component={MyTabs} />
+          {/* <Stack.Screen name="zonelist" component={Zonelist} /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>

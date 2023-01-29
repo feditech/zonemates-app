@@ -11,15 +11,17 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import {set} from 'lodash';
 
 export default function SignupVerification({route, navigation}) {
+  var Logo = require('../../assets/Icons/Logo.png');
   // If null, no SMS has been sent
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
-
+  const [userData, setUserData] = useState();
+  const [isDisabled, setIsDisabled] = useState(true);
   // Handle user state changes
   async function onAuthStateChanged(user) {
-    
     setUser(user);
     if (initializing) setInitializing(false);
   }
@@ -28,7 +30,36 @@ export default function SignupVerification({route, navigation}) {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  var Logo = require('../../assets/Icons/Logo.png');
+  async function getdata() {
+    if (user) {
+      const userData = await firestore()
+        .collection('users')
+        .doc(user.uid)
+        .get();
+      setUserData(userData);
+    }
+  }
+
+  useEffect(() => {
+    getdata();
+  }, []);
+
+  const confirmCode = code => {
+    if (code == userData?._data.verificationCode) {
+      if (isValidCode(userData?._data?.codeTime)) {
+        console.log('verification complete');
+        navigation.replace('home');
+      } else {
+        console.log('code is Expired');
+      }
+    } else console.log('Code is invalid');
+  };
+
+  function isValidCode(codeTimestamp) {
+    const currentTime = Date.now();
+    const timeDiff = currentTime - codeTimestamp;
+    return timeDiff <= 30 * 60 * 1000;
+  }
 
   if (initializing)
     return (
@@ -44,9 +75,6 @@ export default function SignupVerification({route, navigation}) {
       </View>
     );
   }
-
-  console.log('userrr', user);
-  const confirmCode = code => console.log(code);
 
   return (
     <View style={styles.container}>
