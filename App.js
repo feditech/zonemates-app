@@ -9,6 +9,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Profile from './src/Screen/Profile';
 const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
@@ -46,7 +47,21 @@ function MyTabs() {
               color="black"
             />
           ),
+        }}/>
+        <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({color, size}) => (
+            <MaterialCommunityIcons
+              name="user"
+              size={24}
+              color="black"
+            />
+          ),
         }}
+        
       />
     </Tab.Navigator>
   );
