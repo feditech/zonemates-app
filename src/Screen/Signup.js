@@ -18,8 +18,7 @@ import firestore from '@react-native-firebase/firestore';
 
 import useVerificationMutation from '../restapis/verification/send-verification-email';
 
-import http from '../restapis';
-import axios from 'axios';
+import {showToast} from '../components/Toast';
 
 const signupValidationSchema = yup.object().shape({
   name: yup
@@ -49,7 +48,6 @@ export default function Signup({navigation}) {
   // };
 
   const userSignup = async values => {
-   
     setLoading(true);
     auth()
       .createUserWithEmailAndPassword(values.email, values.password)
@@ -78,7 +76,8 @@ export default function Signup({navigation}) {
             // navigation.navigate('signupVerification', {data: values});
           })
           .catch(error => {
-            console.log('firestore error', error);
+            showToast('error', 'Error', error);
+
             setLoading(false);
           });
         //   const docRef = await addDoc(collection(db, 'users'), values);
@@ -87,7 +86,9 @@ export default function Signup({navigation}) {
       .catch(error => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log('auth error', errorCode, errorMessage);
+        // console.log('auth error', errorCode, errorMessage);
+
+        showToast('error', 'Error', errorMessage);
         setLoading(false);
         // ..
       });

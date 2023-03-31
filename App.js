@@ -5,14 +5,19 @@ import Map from './src/Screen/Map';
 import Signup from './src/Screen/Signup';
 import SignupVerification from './src/Screen/SignupVerification';
 import Zonelist from './src/Screen/Zonelist';
+import Profile from './src/Screen/Profile';
+
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import AuthProvider from './src/store/AuthProvider';
+import Toast from 'react-native-toast-message';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
 const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
-
 function MyTabs() {
   return (
     <Tab.Navigator
@@ -25,13 +30,8 @@ function MyTabs() {
         component={Zonelist}
         options={{
           tabBarLabel: 'ZoneList',
-          tabBarIcon: ({color, size}) => (
-            <MaterialCommunityIcons
-              name="home"
-              size={24}
-              color="black"
-            />
-          ),
+          tabBarIcon: ({color, size}) =>  <MaterialCommunityIcons name="map" size={24} color="black" />
+          ,
         }}
       />
       <Tab.Screen
@@ -40,11 +40,17 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Map',
           tabBarIcon: ({color, size}) => (
-            <MaterialCommunityIcons
-              name="map"
-              size={24}
-              color="black"
-            />
+            <MaterialCommunityIcons name="map" size={24} color="black" />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({color, size}) => (
+            <MaterialCommunityIcons name="map" size={24} color="black" />
           ),
         }}
       />
@@ -62,22 +68,25 @@ const App = () => {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="login"
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name="login" component={Login} />
-          <Stack.Screen name="signup" component={Signup} />
-          <Stack.Screen
-            name="signupVerification"
-            component={SignupVerification}
-          />
-          <Stack.Screen name="home" component={MyTabs} />
-          {/* <Stack.Screen name="zonelist" component={Zonelist} /> */}
-        </Stack.Navigator>
-      </NavigationContainer>
+      <AuthProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="login"
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack.Screen name="login" component={Login} />
+            <Stack.Screen name="signup" component={Signup} />
+            <Stack.Screen
+              name="signupVerification"
+              component={SignupVerification}
+            />
+            <Stack.Screen name="home" component={MyTabs} />
+            {/* <Stack.Screen name="zonelist" component={Zonelist} /> */}
+          </Stack.Navigator>
+        </NavigationContainer>
+        <Toast />
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import * as yup from 'yup';
 import {Formik} from 'formik';
 import {
@@ -13,6 +13,10 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+
+import {AuthContext} from '../store/AuthProvider';
+import {showToast} from '../components/Toast';
+
 const loginValidationSchema = yup.object().shape({
   email: yup
     .string()
@@ -27,6 +31,7 @@ const loginValidationSchema = yup.object().shape({
 export default function Login({navigation}) {
   var Logo = require('../../assets/Icons/Logo.png');
   const [loading, setLoading] = useState(false);
+  const {user} = useContext(AuthContext);
 
   const userLogin = values => {
     setLoading(true);
@@ -36,15 +41,37 @@ export default function Login({navigation}) {
         // Signed in
         const user = userCredential.user;
         console.log('User has signin successfully');
-        setLoading(false);
-        navigation.replace('home');
+
+        firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get()
+          .then(userData => {
+            setLoading(false);
+            userData._data.isVerified
+              ? (showToast('success', 'User Login Successfully'),
+                navigation.replace('home'))
+              : (showToast('error', 'User is un verified'),
+                navigation.replace('signupVerification'));
+          })
+          .catch(err => {
+            showToast('error', 'Error',err)
+            console.log('err', err);
+            setLoading(false);
+          });
+
         // ...
       })
       .catch(error => {
         setLoading(false);
         const errorCode = error.code;
+        console.log(errorCode)
         const errorMessage = error.message;
         console.log(errorMessage);
+        if (errorCode == 'auth/user-not-found')
+        showToast('error',"Error","User not found")
+        else
+        showToast('error', errorCode,errorMessage)
       });
   };
 

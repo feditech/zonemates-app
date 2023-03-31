@@ -1,6 +1,7 @@
 import {useMutation} from 'react-query';
 import http from '../index';
 import API_ENDPOINTS from '../API_ENDPOINTS';
+import {showToast} from '../../components/Toast';
 
 const sendVerificationEmail = async (to, verificationCode) => {
   try {
@@ -19,8 +20,10 @@ const useVerificationMutation = () => {
   return useMutation(
     props => sendVerificationEmail(props.to, props.verificationCode),
     {
-      onSuccess: data => console.log('success', data),
-      onError: err => console.log(err),
+      onSuccess: data =>
+        showToast('success', 'Sent Verification Code', 'Check your inbox'),
+
+      onError: err => showToast('error', 'Error', err),
     },
   );
 };
