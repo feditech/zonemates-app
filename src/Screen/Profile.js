@@ -1,9 +1,13 @@
-<<<<<<< HEAD
-import React from 'react';
+import React, { useContext } from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {showToast} from '../components/Toast';
+import { AuthContext } from '../store/AuthProvider';
 const ProfileScreen = ({navigation}) => {
+  const profile = useContext(AuthContext)
+  const info = profile.user
+  console.log("info==>", profile)
+
   const handlelogout = () => {
     auth()
       .signOut()
@@ -21,13 +25,13 @@ const ProfileScreen = ({navigation}) => {
           source={{uri: 'https://picsum.photos/200'}}
           style={styles.avatar}
         />
-        <Text style={styles.name}>{'Player'}</Text>
-        <Text style={styles.username}>@{'renza11'}</Text>
+        <Text style={styles.name}>{info.name}</Text>
+        <Text style={styles.username}>@{info.email}</Text>
       </View>
       <View style={styles.detailsContainer}>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Email:</Text>
-          <Text style={styles.detailValue}>{'abc@gmail.com'}</Text>
+          <Text style={styles.detailValue}>{info.email}</Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Phone:</Text>
@@ -101,19 +105,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-=======
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-
-const Profile = () => {
-  return (
-    <View>
-      <Text>Profile</Text>
-    </View>
-  )
-}
-
-export default Profile
-
-const styles = StyleSheet.create({})
->>>>>>> dev

@@ -1,5 +1,7 @@
 import React, {createContext, useState, useEffect} from 'react';
+import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { firebase } from '@react-native-firebase/firestore';
 export const AuthContext = createContext({
   user: null,
 });
@@ -9,9 +11,13 @@ function AuthProvider({children}) {
   const [userData, setUserData] = useState(null);
   console.log('Context', user);
   // Handle user state changes
-  function onAuthStateChanged(user) {
+  async function onAuthStateChanged(user) {
     if (user) {
-      setUser(user);
+      const userDocument = await firestore().collection('users').doc(user.uid).get();
+      // const userData = firestore().collection(`users`).doc(`hSxIySw6UVeW05YdgCT2tYnxaAD3`).get();
+      const userInfo = userDocument._data
+      console.log("usersDtaaaa---->", userInfo )
+      setUser(userInfo);
     } else {
       setUser(null);
     }
