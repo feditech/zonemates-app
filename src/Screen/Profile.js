@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import auth from '@react-native-firebase/auth';
@@ -100,3 +101,19 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
+=======
+import { StyleSheet, Text, View } from 'react-native'
+import React from 'react'
+
+const Profile = () => {
+  return (
+    <View>
+      <Text>Profile</Text>
+    </View>
+  )
+}
+
+export default Profile
+
+const styles = StyleSheet.create({})
+>>>>>>> dev
