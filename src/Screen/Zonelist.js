@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   FlatList,
@@ -6,37 +6,29 @@ import {
   Text,
   View,
   Image,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
-const persons = [
-  {
-    id: '1',
-    name: 'GameXlone',
-  },
-  {
-    id: '2',
-    name: 'E Mania',
-  },
-  {
-    id: '3',
-    name: 'Collins Arena',
-  },
-  {
-    id: '4',
-    name: 'GameXlone',
-  },
-  {
-    id: '5',
-    name: 'E Mania',
-  },
-  {
-    id: '6',
-    name: 'Collins Arena',
-  },
-];
-
-export default function App() {
+import firestore from '@react-native-firebase/firestore';
+export default function App({navigation}) {
+  const [owners, setOwners] = useState('');
+  const fetchGameZoneOwners = async () => {
+    try {
+      const querySnapshot = await firestore()
+        .collection('users')
+        .where('type', '==', 'owner')
+        .get();
+      const userData = querySnapshot.docs.map(doc => doc.data());
+      setOwners(userData);
+      return userData;
+    } catch (error) {
+      console.error('Error fetching user data: ', error);
+      return [];
+    }
+  };
+  useEffect(() => {
+    fetchGameZoneOwners();
+  }, []);
   const myItemSeparator = () => {
     return (
       <View
@@ -53,10 +45,14 @@ export default function App() {
     );
   };
 
+  const handleExplore = item => {
+    navigation.navigate('GameZoneProfile', {gameZoneData: item});
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={persons}
+        data={owners}
         keyExtractor={item => item.id}
         ItemSeparatorComponent={myItemSeparator}
         ListEmptyComponent={myListEmpty}
@@ -94,9 +90,11 @@ export default function App() {
                   />
                   <Text style={styles.itemText}>{item.name}</Text>
                 </View>
-                <TouchableOpacity style={styles.itemButton}>
-                  <Text style={styles.itemButtonText}>Explore</Text>
-                </TouchableOpacity>
+                <TouchableWithoutFeedback onPress={() => handleExplore(item)}>
+                  <View style={styles.itemButton}>
+                    <Text style={styles.itemButtonText}>Explore</Text>
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
             </>
           );

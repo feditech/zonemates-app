@@ -6,6 +6,8 @@ import Signup from './src/Screen/Signup';
 import SignupVerification from './src/Screen/SignupVerification';
 import Zonelist from './src/Screen/Zonelist';
 import Profile from './src/Screen/Profile';
+import GameZoneProfile from './src/Screen/GameZoneProfile';
+import Booking from './src/Screen/Booking';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from 'react-query';
@@ -13,7 +15,8 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AuthProvider from './src/store/AuthProvider';
 import Toast from 'react-native-toast-message';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Foundation from 'react-native-vector-icons/Foundation';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,8 +33,9 @@ function MyTabs() {
         component={Zonelist}
         options={{
           tabBarLabel: 'ZoneList',
-          tabBarIcon: ({color, size}) =>  <MaterialCommunityIcons name="map" size={24} color="black" />
-          ,
+          tabBarIcon: ({color, size}) => (
+            <Foundation name="list" size={30} color="#105e26" />
+          ),
         }}
       />
       <Tab.Screen
@@ -40,7 +44,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Map',
           tabBarIcon: ({color, size}) => (
-            <MaterialCommunityIcons name="map" size={24} color="black" />
+            <Icon name="map-marker" size={30} color="#105e26" />
           ),
         }}
       />
@@ -50,24 +54,10 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({color, size}) => (
-            <MaterialCommunityIcons name="map" size={24} color="black" />
-          ),
-        }}/>
-        {/* <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({color, size}) => (
-            <MaterialCommunityIcons
-              name="user"
-              size={24}
-              color="black"
-            />
+            <Icon name="user" size={30} color="#105e26" />
           ),
         }}
-        
-      /> */}
+      />
     </Tab.Navigator>
   );
 }
@@ -95,6 +85,8 @@ const App = () => {
               name="signupVerification"
               component={SignupVerification}
             />
+            <Stack.Screen name="GameZoneProfile" component={GameZoneProfile} />
+            <Stack.Screen name="Booking" component={Booking} />
             <Stack.Screen name="home" component={MyTabs} />
             {/* <Stack.Screen name="zonelist" component={Zonelist} /> */}
           </Stack.Navigator>
@@ -104,6 +96,7 @@ const App = () => {
     </QueryClientProvider>
   );
 };
+export default App;
 
 // import React, {useState, useEffect} from 'react';
 // import {Button, TextInput, Text} from 'react-native';
@@ -203,5 +196,3 @@ const App = () => {
 //     );
 //   }
 // };
-
-export default App;
