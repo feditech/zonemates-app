@@ -155,7 +155,7 @@ export default function Map({navigation}) {
             onPress={() =>
               navigation.navigate('GameZoneProfile', {gameZoneData: user})
             }>
-            <Text>{user.name}</Text>
+            <Text >{user.name}</Text>
             <Text>{user.tagLine}</Text>
           </Callout>
         </Marker>

@@ -56,7 +56,7 @@ export default function Signup({navigation}) {
         const user = userCredential.user;
         const id = user.uid;
         console.log('User authenticated', user.uid);
-
+        
         firestore()
           .collection('users')
           .doc(id)

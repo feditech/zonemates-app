@@ -20,7 +20,8 @@ export default function SignupVerification({route, navigation}) {
   var Logo = require('../../assets/Icons/Logo.png');
 
   const [loading, setLoading] = useState(false);
-  const {user} = useContext(AuthContext);
+  const user = useContext(AuthContext);
+  console.log('here is user', user);
   const [userData, setUserData] = useState();
   const {mutate: sendVerification, isError} = useVerificationMutation();
 
@@ -28,14 +29,15 @@ export default function SignupVerification({route, navigation}) {
     if (user) {
       const userData = await firestore()
         .collection('users')
-        .doc(user.uid)
+        .doc(user.user.id)
         .get();
       setUserData(userData);
+      console.log('user', userData);
     }
   }
 
   useEffect(() => {
-    'calling data';
+    console.log('calling data');
     getdata();
   }, [user]);
 
@@ -47,8 +49,10 @@ export default function SignupVerification({route, navigation}) {
       if (isValidCode(userData?._data?.codeTime)) {
         console.log('verification complete');
 
-        const updatedUser = Object.entries(userData?._data).filter(([key]) => key !== 'codeTime' && key !== 'verificationCode').reduce((acc, [key, value]) => ({...acc, [key]: value}), {});
-    
+        const updatedUser = Object.entries(userData?._data)
+          .filter(([key]) => key !== 'codeTime' && key !== 'verificationCode')
+          .reduce((acc, [key, value]) => ({...acc, [key]: value}), {});
+
         updatedUser.isVerified = true;
         firestore()
           .collection('users')
@@ -57,7 +61,10 @@ export default function SignupVerification({route, navigation}) {
           .then(e => {
             console.log('User added! to firebase');
             setLoading(false);
-            // sendVerification({to: values.email, verificationCode});
+            sendVerification({
+              to: values.email,
+              verificationCode: verificationCode,
+            });
 
             showToast('success', 'Success', 'User Verified');
             navigation.replace('home');
@@ -87,9 +94,10 @@ export default function SignupVerification({route, navigation}) {
 
   const codeResend = () => {
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
-    console.log("REsend code",verificationCode)
+    console.log('REsend code', verificationCode);
+    let obj = {to: userData?._data?.email, verificationCode: verificationCode};
+    userData && sendVerification(obj);
     userData &&
-      (sendVerification({to: userData?._data?.email, verificationCode}),
       firestore()
         .collection('users')
         .doc(userData?._data?.id)
@@ -99,7 +107,7 @@ export default function SignupVerification({route, navigation}) {
         })
         .then(() => {
           console.log('User updated!');
-        }));
+        });
   };
 
   // if (initializing)
@@ -133,7 +141,7 @@ export default function SignupVerification({route, navigation}) {
         // onCodeChanged={code => {
         //   setCode(code);
         // }}
-      
+
         autoFocusOnLoad={false}
         codeInputFieldStyle={styles.underlineStyleBase}
         codeInputHighlightStyle={styles.underlineStyleHighLighted}
@@ -174,7 +182,7 @@ const styles = StyleSheet.create({
   borderStyleBase: {
     width: 30,
     height: 45,
-    
+
     color: '#081B33',
     borderBottomWidth: 2,
   },

@@ -4,6 +4,8 @@ import API_ENDPOINTS from '../API_ENDPOINTS';
 import {showToast} from '../../components/Toast';
 
 const sendVerificationEmail = async (to, verificationCode) => {
+  console.log('verification props', to, verificationCode);
+  console.log('verificatio prop', to);
   try {
     const {data} = await http.post(API_ENDPOINTS.sendVerificationEmail, {
       to,
