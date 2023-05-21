@@ -8,7 +8,7 @@ import Zonelist from './src/Screen/Zonelist';
 import Profile from './src/Screen/Profile';
 import GameZoneProfile from './src/Screen/GameZoneProfile';
 import Booking from './src/Screen/Booking';
-
+import DateSelectionScreen from './src/Screen/DateSelectionScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -72,6 +72,7 @@ const App = () => {
   });
   return (
     <QueryClientProvider client={queryClient}>
+      
       <AuthProvider>
         <NavigationContainer>
           <Stack.Navigator
@@ -87,6 +88,7 @@ const App = () => {
             />
             <Stack.Screen name="GameZoneProfile" component={GameZoneProfile} />
             <Stack.Screen name="Booking" component={Booking} />
+            <Stack.Screen name="DateSelectionScreen" component={DateSelectionScreen} />
             <Stack.Screen name="home" component={MyTabs} />
             {/* <Stack.Screen name="zonelist" component={Zonelist} /> */}
           </Stack.Navigator>
