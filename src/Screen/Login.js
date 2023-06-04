@@ -1,6 +1,6 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import * as yup from 'yup';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import {
   StyleSheet,
   Text,
@@ -14,8 +14,8 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-import {AuthContext} from '../store/AuthProvider';
-import {showToast} from '../components/Toast';
+import { AuthContext } from '../store/AuthProvider';
+import { showToast } from '../components/Toast';
 
 const loginValidationSchema = yup.object().shape({
   email: yup
@@ -24,14 +24,14 @@ const loginValidationSchema = yup.object().shape({
     .required('Email Address is Required'),
   password: yup
     .string()
-    .min(8, ({min}) => `Password must be at least ${min} characters`)
+    .min(8, ({ min }) => `Password must be at least ${min} characters`)
     .required('Password is required'),
 });
 
-export default function Login({navigation}) {
-  var Logo = require('../../assets/Icons/Logo.png');
+export default function Login({ navigation }) {
+  var Logo = require('../../assets/Icons/whitelogo.png');
   const [loading, setLoading] = useState(false);
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const userLogin = values => {
     setLoading(true);
@@ -55,7 +55,7 @@ export default function Login({navigation}) {
                 navigation.replace('signupVerification'));
           })
           .catch(err => {
-            showToast('error', 'Error',err)
+            showToast('error', 'Error', err)
             console.log('err', err);
             setLoading(false);
           });
@@ -69,15 +69,15 @@ export default function Login({navigation}) {
         const errorMessage = error.message;
         console.log(errorMessage);
         if (errorCode == 'auth/user-not-found')
-        showToast('error',"Error","User not found")
+          showToast('error', "Error", "User not found")
         else
-        showToast('error', errorCode,errorMessage)
+          showToast('error', errorCode, errorMessage)
       });
   };
 
   return loading ? (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#081B33" />
+      <ActivityIndicator size="large" color="#fff" />
     </View>
   ) : (
     <ScrollView contentContainerStyle={styles.container}>
@@ -86,7 +86,7 @@ export default function Login({navigation}) {
         <Text style={styles.heading}>Welcome Back Mate!</Text>
       </View>
       <Formik
-        initialValues={{email: '', password: ''}}
+        initialValues={{ email: '', password: '' }}
         validationSchema={loginValidationSchema}
         // onSubmit={values => userLogin(values, navigation)}
         onSubmit={values => userLogin(values, navigation)}>
@@ -109,6 +109,7 @@ export default function Login({navigation}) {
                 onBlur={handleBlur('email')}
                 value={values.email}
                 keyboardType="email-address"
+                placeholderTextColor={"#fff"}
               />
               {errors.email && touched.email && (
                 <Text style={styles.errorText}>{errors.email}</Text>
@@ -121,6 +122,7 @@ export default function Login({navigation}) {
                 onBlur={handleBlur('password')}
                 value={values.password}
                 secureTextEntry
+                placeholderTextColor={"#fff"}
               />
               {errors.password && touched.password && (
                 <Text style={styles.errorText}>{errors.password}</Text>
@@ -131,7 +133,7 @@ export default function Login({navigation}) {
             </TouchableOpacity>
 
             <View style={styles.bottomText}>
-              <Text>Don't Have an Account?</Text>
+              <Text style={{ color: '#fff' }}>Don't Have an Account?</Text>
               <TouchableOpacity onPress={() => navigation.navigate('signup')}>
                 <Text style={styles.signupLink}> Signup Here </Text>
               </TouchableOpacity>
@@ -150,6 +152,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
     minHeight: '100%',
+    backgroundColor: '#081B33',
+    color: '#fff'
   },
   Logo: {
     width: 180,
@@ -163,13 +167,16 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '600',
     margin: 5,
+    color: '#fff'
   },
   subHeading: {
     fontSize: 14,
+    color: '#fff'
   },
   inputView: {
     width: '80%',
     margin: 0,
+    color: '#fff'
   },
   TextInput: {
     height: 50,
@@ -177,6 +184,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#d3d3d3',
     padding: 5,
     marginBottom: 10,
+    color: '#fff',
+    placeholderTextColor: '#fff', // Add this line to set the placeholder text color
+
   },
   btn: {
     marginTop: 40,
@@ -184,24 +194,27 @@ const styles = StyleSheet.create({
     padding: 15,
     display: 'flex',
     justifyContent: 'center',
-    backgroundColor: '#081B33',
+    backgroundColor: '#fff',
+    
   },
   btntext: {
     textAlign: 'center',
-    fontSize: 15,
-    color: '#fff',
+    fontSize: 18,
+    fontWeight:'bold',
+    color: '#081B33',
   },
   bottomText: {
     marginTop: 10,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    color: '#fff'
   },
   errorText: {
     color: 'red',
   },
   signupLink: {
-    color: '#081B33',
+    color: '#fff',
     fontWeight: '800',
   },
 });

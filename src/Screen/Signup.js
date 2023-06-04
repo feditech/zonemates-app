@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import * as yup from 'yup';
-import {Formik} from 'formik';
+import { Formik } from 'formik';
 import {
   StyleSheet,
   Text,
@@ -18,7 +18,7 @@ import firestore from '@react-native-firebase/firestore';
 
 import useVerificationMutation from '../restapis/verification/send-verification-email';
 
-import {showToast} from '../components/Toast';
+import { showToast } from '../components/Toast';
 
 const signupValidationSchema = yup.object().shape({
   name: yup
@@ -32,16 +32,16 @@ const signupValidationSchema = yup.object().shape({
     .required('Email Address is Required'),
   password: yup
     .string()
-    .min(8, ({min}) => `Password must be at least ${min} characters`)
+    .min(8, ({ min }) => `Password must be at least ${min} characters`)
     .required('Password is required'),
 });
 
-export default function Signup({navigation}) {
-  var Logo = require('../../assets/Icons/Logo.png');
+export default function Signup({ navigation }) {
+  var Logo = require('../../assets/Icons/whitelogo.png');
   const [loading, setLoading] = useState(false);
   const verificationCode = Math.floor(100000 + Math.random() * 900000);
 
-  const {mutate: sendVerification} = useVerificationMutation();
+  const { mutate: sendVerification } = useVerificationMutation();
 
   // const userSignup = values => {
   //   sendVerification({to: values.email, verificationCode: verificationCode});
@@ -55,8 +55,8 @@ export default function Signup({navigation}) {
         // Signed in
         const user = userCredential.user;
         const id = user.uid;
-        console.log('User authenticated', user.uid);
-        
+        console.log('User authenticated', user);
+
         firestore()
           .collection('users')
           .doc(id)
@@ -71,7 +71,7 @@ export default function Signup({navigation}) {
           .then(e => {
             console.log('User added! to firebase');
             setLoading(false);
-            sendVerification({to: values.email, verificationCode});
+            sendVerification({ to: values.email, verificationCode });
             navigation.replace('signupVerification');
             // navigation.navigate('signupVerification', {data: values});
           })
@@ -94,96 +94,97 @@ export default function Signup({navigation}) {
       });
   };
 
+ 
   return loading ? (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#081B33" />
+      <ActivityIndicator size="large" color="#fff" />
     </View>
   ) : (
-    <ScrollView contentContainerStyle={{flex: 1, margin: 0}}>
-      <View style={styles.container}>
-        <Image source={Logo} style={styles.Logo} />
-        <View style={styles.headingContainer}>
-          <Text style={styles.heading}>Create your account</Text>
-        </View>
-
-        <Formik
-          initialValues={{
-            name: '',
-            email: '',
-            password: '',
-          }}
-          validationSchema={signupValidationSchema}
-          onSubmit={values => userSignup(values)}>
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-            isValid,
-          }) => (
-            <>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.TextInput}
-                  name="name"
-                  placeholder="Name"
-                  onChangeText={handleChange('name')}
-                  onBlur={handleBlur('name')}
-                  value={values.name}
-                />
-                {errors.name && touched.name && (
-                  <Text style={styles.errorText}>{errors.name}</Text>
-                )}
-                <TextInput
-                  style={styles.TextInput}
-                  name="email"
-                  placeholder="Email Address"
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                  keyboardType="email-address"
-                />
-                {errors.email && touched.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-                <TextInput
-                  style={styles.TextInput}
-                  name="password"
-                  placeholder="Password"
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  secureTextEntry
-                />
-                {errors.password && touched.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-              </View>
-              <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
-                <Text style={styles.btntext}>Signup</Text>
-              </TouchableOpacity>
-              <View style={styles.bottomText}>
-                <Text>Already Have an Account?</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('login')}>
-                  <Text style={styles.signupLink}> Login Here </Text>
-                </TouchableOpacity>
-              </View>
-            </>
-          )}
-        </Formik>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Image source={Logo} style={styles.Logo} />
+      <View style={styles.headingContainer}>
+        <Text style={styles.heading}>Welcome Back Mate!</Text>
       </View>
+      <Formik
+        initialValues={{ name:'',email: '', password: '' }}
+        validationSchema={signupValidationSchema}
+        // onSubmit={values => userLogin(values, navigation)}
+        onSubmit={values => userSignup(values)}>
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+          isValid,
+        }) => (
+          <>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.TextInput}
+              name="name"
+              placeholder="Name"
+              onChangeText={handleChange('name')}
+              onBlur={handleBlur('name')}
+              value={values.name}
+              placeholderTextColor={"#fff"}
+            />
+            {errors.name && touched.name && (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            )}
+            <TextInput
+              style={styles.TextInput}
+              name="email"
+              placeholder="Email Address"
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              value={values.email}
+              keyboardType="email-address"
+              placeholderTextColor={"#fff"}
+            />
+            {errors.email && touched.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+            <TextInput
+              style={styles.TextInput}
+              name="password"
+              placeholder="Password"
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
+              value={values.password}
+              secureTextEntry
+              placeholderTextColor={"#fff"}
+            />
+            {errors.password && touched.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
+          </View>
+          <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
+            <Text style={styles.btntext}>Signup</Text>
+          </TouchableOpacity>
+          <View style={styles.bottomText}>
+            <Text style={{ color: '#fff' }}>Already Have an Account?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('login')}>
+              <Text style={styles.signupLink}> Login Here </Text>
+            </TouchableOpacity>
+          </View>
+        </>
+        )}
+      </Formik>
     </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    height: '100%',
+    minHeight: '100%',
+    backgroundColor: '#081B33',
+    color: '#fff'
   },
   Logo: {
     width: 180,
@@ -197,13 +198,16 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '600',
     margin: 5,
+    color: '#fff'
   },
   subHeading: {
     fontSize: 14,
+    color: '#fff'
   },
   inputView: {
     width: '80%',
     margin: 0,
+    color: '#fff'
   },
   TextInput: {
     height: 50,
@@ -211,6 +215,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#d3d3d3',
     padding: 5,
     marginBottom: 10,
+    color: '#fff',
+    placeholderTextColor: '#fff', // Add this line to set the placeholder text color
+
   },
   btn: {
     marginTop: 40,
@@ -218,63 +225,27 @@ const styles = StyleSheet.create({
     padding: 15,
     display: 'flex',
     justifyContent: 'center',
-    backgroundColor: '#081B33',
+    backgroundColor: '#fff',
+    
   },
   btntext: {
     textAlign: 'center',
-    fontSize: 15,
-    color: '#fff',
-  },
-  errorText: {
-    color: 'red',
+    fontSize: 18,
+    fontWeight:'bold',
+    color: '#081B33',
   },
   bottomText: {
     marginTop: 10,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    color: '#fff'
+  },
+  errorText: {
+    color: 'red',
   },
   signupLink: {
-    color: '#081B33',
+    color: '#fff',
     fontWeight: '800',
   },
 });
-
-// const phoneRegExp = /^\+92[0-9]{10}$/;
-// confirmPassword: yup.string().when('password', {
-//   is: val => (val && val.length > 0 ? true : false),
-//   then: yup
-//     .string()
-//     .oneOf([yup.ref('password')], 'Both password need to be the same'),
-// }),
-
-// phone: yup
-//   .string()
-//   .required('Phone is required')
-//   .matches(phoneRegExp, 'Phone number is not valid'),
-
-{
-  /* <TextInput
-                  style={styles.TextInput}
-                  name="confirmPassword"
-                  placeholder="Confirm Password"
-                  onChangeText={handleChange('confirmPassword')}
-                  onBlur={handleBlur('confirmPassword')}
-                  value={values.confirmPassword}
-                  secureTextEntry
-                />
-                {errors.confirmPassword && touched.confirmPassword && (
-                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                )}
-                <TextInput
-                  style={styles.TextInput}
-                  name="phone"
-                  placeholder="Phone"
-                  onChangeText={handleChange('phone')}
-                  onBlur={handleBlur('phone')}
-                  value={values.phone}
-                />
-                {errors.phone && touched.phone && (
-                  <Text style={styles.errorText}>{errors.phone}</Text>
-                )} */
-}

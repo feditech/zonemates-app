@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {
   StyleSheet,
@@ -11,19 +11,20 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import {AuthContext} from '../store/AuthProvider';
-import {showToast} from '../components/Toast';
+import { AuthContext } from '../store/AuthProvider';
+import { showToast } from '../components/Toast';
 
 import useVerificationMutation from '../restapis/verification/send-verification-email';
 
-export default function SignupVerification({route, navigation}) {
-  var Logo = require('../../assets/Icons/Logo.png');
+export default function SignupVerification({ route, navigation }) {
+  var Logo = require('../../assets/Icons/whitelogo.png');
 
   const [loading, setLoading] = useState(false);
   const user = useContext(AuthContext);
-  console.log('here is user', user);
+  // console.log("User from auth context",user.user.id)
+
   const [userData, setUserData] = useState();
-  const {mutate: sendVerification, isError} = useVerificationMutation();
+  const { mutate: sendVerification, isError } = useVerificationMutation();
 
   async function getdata() {
     if (user) {
@@ -32,7 +33,7 @@ export default function SignupVerification({route, navigation}) {
         .doc(user.user.id)
         .get();
       setUserData(userData);
-      console.log('user', userData);
+      // console.log('user data from firebase', userData);
     }
   }
 
@@ -44,14 +45,12 @@ export default function SignupVerification({route, navigation}) {
   const confirmCode = code => {
     setLoading(true);
     console.log('code', code);
-    console.log('code from data base', userData?._data?.verificationCode);
+    console.log('code from data base', userData?._data.verificationCode);
     if (code == userData?._data.verificationCode) {
       if (isValidCode(userData?._data?.codeTime)) {
-        console.log('verification complete');
-
         const updatedUser = Object.entries(userData?._data)
           .filter(([key]) => key !== 'codeTime' && key !== 'verificationCode')
-          .reduce((acc, [key, value]) => ({...acc, [key]: value}), {});
+          .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
         updatedUser.isVerified = true;
         firestore()
@@ -61,17 +60,13 @@ export default function SignupVerification({route, navigation}) {
           .then(e => {
             console.log('User added! to firebase');
             setLoading(false);
-            sendVerification({
-              to: values.email,
-              verificationCode: verificationCode,
-            });
-
             showToast('success', 'Success', 'User Verified');
             navigation.replace('home');
 
             // navigation.navigate('signupVerification', {data: values});
           })
           .catch(error => {
+            console.log("firebase error")
             showToast('error', 'Error', error);
 
             setLoading(false);
@@ -95,7 +90,7 @@ export default function SignupVerification({route, navigation}) {
   const codeResend = () => {
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
     console.log('REsend code', verificationCode);
-    let obj = {to: userData?._data?.email, verificationCode: verificationCode};
+    let obj = { to: userData?._data?.email, verificationCode: verificationCode };
     userData && sendVerification(obj);
     userData &&
       firestore()
@@ -107,6 +102,7 @@ export default function SignupVerification({route, navigation}) {
         })
         .then(() => {
           console.log('User updated!');
+          getdata()
         });
   };
 
@@ -126,7 +122,7 @@ export default function SignupVerification({route, navigation}) {
   // }
   return loading ? (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#081B33" />
+      <ActivityIndicator size="large" color="#fff" />
     </View>
   ) : (
     <View style={styles.container}>
@@ -135,7 +131,7 @@ export default function SignupVerification({route, navigation}) {
         <Text style={styles.heading}>Signup Verification</Text>
       </View>
       <OTPInputView
-        style={{width: '80%', height: 100, color: 'red'}}
+        style={{ width: '80%', height: 100 }}
         pinCount={6}
         // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
         // onCodeChanged={code => {
@@ -161,7 +157,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    color: 'red',
+
+    backgroundColor: '#081B33',
+    color: '#fff'
   },
   Logo: {
     width: 180,
@@ -175,6 +173,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '600',
     margin: 5,
+        color: '#fff'
   },
   subHeading: {
     fontSize: 14,
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
   },
 
   underlineStyleBase: {
-    color: '#081B33',
+    color: '#fff',
     width: 30,
     height: 45,
     borderWidth: 0,
@@ -200,7 +199,7 @@ const styles = StyleSheet.create({
   },
 
   underlineStyleHighLighted: {
-    borderColor: '#081B33',
+    borderColor: '#fff',
   },
 
   btn: {
@@ -209,12 +208,13 @@ const styles = StyleSheet.create({
     padding: 15,
     display: 'flex',
     justifyContent: 'center',
-    backgroundColor: '#081B33',
+    backgroundColor: '#fff',
   },
   btntext: {
     textAlign: 'center',
-    fontSize: 15,
-    color: '#fff',
+    fontSize: 18,
+    fontWeight:'bold',
+    color: '#081B33',
   },
 });
 

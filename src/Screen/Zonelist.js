@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   FlatList,
@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
-export default function App({navigation}) {
+export default function App({ navigation }) {
   const [owners, setOwners] = useState('');
+
   const fetchGameZoneOwners = async () => {
     try {
       const querySnapshot = await firestore()
@@ -32,21 +33,21 @@ export default function App({navigation}) {
   const myItemSeparator = () => {
     return (
       <View
-        style={{height: 1, backgroundColor: 'grey', marginHorizontal: 10}}
+        style={{ height: 1, backgroundColor: 'grey', marginHorizontal: 10 }}
       />
     );
   };
 
   const myListEmpty = () => {
     return (
-      <View style={{alignItems: 'center'}}>
+      <View style={{ alignItems: 'center' }}>
         <Text style={styles.item}>No data found</Text>
       </View>
     );
   };
 
   const handleExplore = item => {
-    navigation.navigate('GameZoneProfile', {gameZoneData: item});
+    navigation.navigate('GameZoneProfile', { gameZoneData: item });
   };
 
   return (
@@ -58,35 +59,29 @@ export default function App({navigation}) {
         ListEmptyComponent={myListEmpty}
         ListHeaderComponent={() => (
           <Text
-            style={{
-              fontSize: 30,
-              textAlign: 'center',
-              marginTop: 20,
-              fontWeight: 'bold',
-              textDecorationLine: 'underline',
-            }}>
+            style={styles.mainHeading}>
             Game Zone List
           </Text>
         )}
-        ListFooterComponent={() => (
-          <Text
-            style={{
-              fontSize: 30,
-              textAlign: 'center',
-              marginBottom: 20,
-              fontWeight: 'bold',
-            }}>
-            End of Result
-          </Text>
-        )}
-        renderItem={({item}) => {
+        // ListFooterComponent={() => (
+        //   <Text
+        //     style={{
+        //       fontSize: 30,
+        //       textAlign: 'center',
+        //       marginBottom: 20,
+        //       fontWeight: 'bold',
+        //     }}>
+        //     End of Result
+        //   </Text>
+        // )}
+        renderItem={({ item }) => {
           return (
             <>
               <View style={styles.item}>
                 <View style={styles.left}>
                   <Image
                     style={styles.itemImage}
-                    source={require('../../assets/Icons/Logo.png')}
+                    source={item.profileImage ? { uri: item.profileImage } : require('../../assets/Icons/Logo.png')}
                   />
                   <Text style={styles.itemText}>{item.name}</Text>
                 </View>
@@ -107,10 +102,18 @@ export default function App({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 5,
+    // marginTop: 5,
     fontSize: 30,
   },
-
+  mainHeading: {
+    color:'#fff',
+    fontSize: 30,
+    padding:10,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    width: '100%',
+    backgroundColor: '#081B33'
+  },
   item: {
     flex: 1,
     flexDirection: 'row',
@@ -119,11 +122,12 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 5,
   },
-  left: {flex: 1, flexDirection: 'row', alignItems: 'center'},
+  left: { flex: 1, flexDirection: 'row', alignItems: 'center' },
 
   itemImage: {
     height: 30,
     width: 60,
+    resizeMode: 'contain'
   },
   itemText: {
     fontSize: 20,
@@ -132,8 +136,8 @@ const styles = StyleSheet.create({
   itemButton: {
     padding: 10,
     borderWidth: 2,
-    borderRadius: 10,
-    backgroundColor: '#105e26',
+    borderRadius: 300,
+    backgroundColor: '#081B33',
     borderColor: '#fff',
   },
   itemButtonText: {

@@ -12,7 +12,7 @@ const ProfileScreen = ({navigation}) => {
     auth()
       .signOut()
       .then(() => {
-        showToast('success', 'Success', 'User Signout');
+        showToast('success', 'User Signout');
         navigation.replace('login');
       })
       .catch();

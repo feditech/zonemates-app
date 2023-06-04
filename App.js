@@ -34,7 +34,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'ZoneList',
           tabBarIcon: ({color, size}) => (
-            <Foundation name="list" size={30} color="#105e26" />
+            <Foundation name="list" size={30} color="#081B33" />
           ),
         }}
       />
@@ -44,7 +44,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Map',
           tabBarIcon: ({color, size}) => (
-            <Icon name="map-marker" size={30} color="#105e26" />
+            <Icon name="map-marker" size={30} color="#081B33" />
           ),
         }}
       />
@@ -54,7 +54,7 @@ function MyTabs() {
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({color, size}) => (
-            <Icon name="user" size={30} color="#105e26" />
+            <Icon name="user" size={30} color="#081B33" />
           ),
         }}
       />

@@ -1,9 +1,8 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, Image, Button, StyleSheet, Animated} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, Button, StyleSheet, Animated } from 'react-native';
 
-const GameZoneProfileScreen = ({route, navigation}) => {
-  const {gameZoneData} = route.params;
+const GameZoneProfileScreen = ({ route, navigation }) => {
+  const { gameZoneData } = route.params;
   const fadeAnim = useState(new Animated.Value(0))[0];
   const translateAnim = useState(new Animated.Value(300))[0];
 
@@ -24,45 +23,45 @@ const GameZoneProfileScreen = ({route, navigation}) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#1Df14f', '#134ff8']}
-        style={styles.background}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 1}}>
-        <Animated.View
-          style={[
-            styles.logoContainer,
-            {opacity: fadeAnim, transform: [{translateY: translateAnim}]},
-          ]}>
-          <Image
-            source={require('../../assets/Icons/Logo.png')}
-            style={styles.logo}
+      <Animated.View
+        style={[
+          styles.logoContainer,
+          { opacity: fadeAnim, transform: [{ translateY: translateAnim }] },
+        ]}
+      >
+        <Image
+          source={
+            gameZoneData.profileImage
+              ? { uri: gameZoneData.profileImage }
+              : require('../../assets/Icons/Logo.png')
+          }
+          style={styles.logo}
+        />
+        <Text style={styles.name}>{gameZoneData.name}</Text>
+      </Animated.View>
+      <Animated.View
+        style={[
+          styles.detailsContainer,
+          { opacity: fadeAnim, transform: [{ translateY: translateAnim }] },
+        ]}
+      >
+        <Text style={styles.description}>{gameZoneData.tagLine}</Text>
+        <Text style={styles.description}>{gameZoneData.aboutGameZone}</Text>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoText}>Email: {gameZoneData.email}</Text>
+          <Text style={styles.infoText}>
+            No. of PCs: {gameZoneData.noOfPcs}
+          </Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            style={styles.submitbutton}
+            title="Book a Slot"
+            onPress={() => navigation.navigate('DateSelectionScreen' , { gameZoneId: gameZoneData.id })}
+            color="#081B33" // Set the color to #081B33
           />
-          <Text style={styles.name}>{gameZoneData.name}</Text>
-        </Animated.View>
-        <LinearGradient
-          colors={['#134ff8', '#1Df14f']}
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 1}}
-          style={styles.detailsContainer}>
-          <Text style={styles.description}>{gameZoneData.tagLine}</Text>
-          <Text style={styles.description}>{gameZoneData.aboutGameZone}</Text>
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>Email: {gameZoneData.email}</Text>
-            <Text style={styles.infoText}>
-              No. of PCs: {gameZoneData.noOfPcs}
-            </Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              style={styles.submitbutton}
-              title="Book a Slot"
-              onPress={() => navigation.navigate('DateSelectionScreen')}
-              color="#333"
-            />
-          </View>
-        </LinearGradient>
-      </LinearGradient>
+        </View>
+      </Animated.View>
     </View>
   );
 };
@@ -70,11 +69,9 @@ const GameZoneProfileScreen = ({route, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  background: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#f5f5f5', // Set a different background color
   },
   logoContainer: {
     alignItems: 'center',
@@ -90,35 +87,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     textAlign: 'center',
-    color: '#fff',
+    color: '#081B33', // Set the color to #081B33
   },
   detailsContainer: {
-    // backgroundColor: '#fff',
     borderRadius: 20,
     padding: 20,
     width: '80%',
+    backgroundColor: '#fff', // Set a different background color
   },
   description: {
-    color: '#fff',
     fontSize: 16,
     marginBottom: 10,
     textAlign: 'center',
+    color: '#333', // Set a different color for the text
   },
   infoContainer: {
     marginTop: 20,
   },
   infoText: {
     fontSize: 16,
-    color: '#fff',
     marginBottom: 10,
     textAlign: 'center',
+    color: '#666', // Set a different color for the text
   },
   buttonContainer: {
     marginTop: 20,
     width: '100%',
   },
   submitbutton: {
-    color: '#fff',
+    color: '#081B33', // Set the color to #081B33
   },
 });
 

@@ -149,7 +149,7 @@ export default function Map({navigation}) {
           coordinate={{latitude: user.latLng.lat, longitude: user.latLng.lng}}
           title={user.name}
           description={user.tagLine}>
-          <Icon name="map-marker" size={30} color="green" />
+          <Icon name="map-marker" size={30} color="#081B33" />
           <Callout
             style={{width: 200}}
             onPress={() =>
@@ -172,7 +172,7 @@ export default function Map({navigation}) {
       {/* Render our MapView */}
       <MapView style={styles.map} region={region} initialRegion={region}>
         <Marker draggable onDragEnd={e => console.log(e)} coordinate={marker}>
-          <Icon name="map-marker" size={30} color="blue" />
+          <Icon name="map-marker" size={30} color="red" />
         </Marker>
         {markers}
       </MapView>
@@ -180,7 +180,7 @@ export default function Map({navigation}) {
       <TouchableOpacity
         style={styles.locationButton}
         onPress={getOneTimeLocation}>
-        <MaterialIcons name="my-location" size={30} color="green" />
+        <MaterialIcons name="my-location" size={30} color="#081B33" />
       </TouchableOpacity>
     </View>
   );

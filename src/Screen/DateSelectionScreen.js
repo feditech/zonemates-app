@@ -1,14 +1,15 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, Button, StyleSheet, Animated, Easing} from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const DateSelectionScreen = ({navigation}) => {
+const DateSelectionScreen = ({ route, navigation }) => {
+  const { gameZoneId } = route.params;
+ console.log( { selectedDate, gameZoneId }) 
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
     Animated.timing(scaleAnim, {
       toValue: 1,
@@ -33,7 +34,7 @@ const DateSelectionScreen = ({navigation}) => {
   };
 
   const handleContinue = () => {
-    navigation.navigate('Booking', {selectedDate});
+    navigation.navigate('Booking', { selectedDate: selectedDate.toISOString(), gameZoneId });
   };
   const getMaxDate = () => {
     const date = new Date();
@@ -46,13 +47,16 @@ const DateSelectionScreen = ({navigation}) => {
       <Animated.View
         style={[
           styles.contentContainer,
-          {transform: [{scale: scaleAnim}], opacity: opacityAnim},
+          { transform: [{ scale: scaleAnim }], opacity: opacityAnim },
         ]}>
         <View style={styles.header}>
           <Text style={styles.title}>Select a Date</Text>
         </View>
         <View style={styles.datePickerContainer}>
-          <Button title="Select Date" onPress={() => setShowDatePicker(true)} />
+          <TouchableOpacity style={styles.btn} onPress={() => setShowDatePicker(true)} >
+            <Text style={styles.btnText}>Select Date</Text>
+            </TouchableOpacity>
+
           {showDatePicker && (
             <DateTimePicker
               value={selectedDate || new Date()}
@@ -62,6 +66,7 @@ const DateSelectionScreen = ({navigation}) => {
               style={styles.dateTimePicker}
               minimumDate={new Date()} // Disable previous dates
               maximumDate={getMaxDate()} // Disable dates after 7 days from today
+
             />
           )}
         </View>
@@ -73,11 +78,13 @@ const DateSelectionScreen = ({navigation}) => {
             </Text>
           </View>
         )}
-        <Button
-          title="Continue"
+        <TouchableOpacity
           onPress={handleContinue}
           disabled={!selectedDate}
-        />
+          style={styles.btn}
+        >
+          <Text style={styles.btnText}>Continue</Text>
+        </TouchableOpacity>
       </Animated.View>
     </View>
   );
@@ -122,6 +129,17 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: '#333',
   },
+  btn:{
+    backgroundColor:'#081B33',
+    padding:5,
+    borderRadius:10
+  },
+  btnText:{
+    color:'#fff',
+    fontSize:20,
+    textAlign:'center'
+
+  }
 });
 
 export default DateSelectionScreen;

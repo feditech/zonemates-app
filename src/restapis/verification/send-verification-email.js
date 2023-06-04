@@ -23,7 +23,7 @@ const useVerificationMutation = () => {
     props => sendVerificationEmail(props.to, props.verificationCode),
     {
       onSuccess: data =>
-        showToast('success', 'Sent Verification Code', 'Check your inbox'),
+        showToast('success', 'Sent Verification Code, Check your email'),
 
       onError: err => showToast('error', 'Error', err),
     },
