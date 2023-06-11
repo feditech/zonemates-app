@@ -1,5 +1,5 @@
-import {Platform} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import { Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,19 +9,23 @@ import {
   Button,
   Text,
 } from 'react-native';
-import MapView, {Marker, Callout} from 'react-native-maps';
+import MapView, { Marker, Callout, Circle } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Geolocation from '@react-native-community/geolocation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import firestore from '@react-native-firebase/firestore';
-export default function Map({navigation}) {
+import { getPreciseDistance } from 'geolib';
+import * as geolib from 'geolib';
+
+export default function Map({ navigation }) {
+  const [circleRadius, setCircleRadius] = useState(30000); // Initial radius of 5 km
   const [region, setRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitudeDelta: 2.12,
+    longitudeDelta: 2.12
   });
 
   const [marker, setMarker] = useState({
@@ -77,8 +81,8 @@ export default function Map({navigation}) {
         setRegion({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 0.8,
+          longitudeDelta: 0.8
         });
       },
       error => {
@@ -106,8 +110,8 @@ export default function Map({navigation}) {
         setRegion({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 0.8,
+          longitudeDelta: 0.8
         });
       },
       error => {
@@ -129,8 +133,8 @@ export default function Map({navigation}) {
         .collection('users')
         .where('type', '==', 'owner')
         .get();
-      const userData = querySnapshot.docs.map(doc => doc.data());
-      return userData;
+      const gamezoneData = querySnapshot.docs.map(doc => doc.data());
+      return gamezoneData;
     } catch (error) {
       console.error('Error fetching user data: ', error);
       return [];
@@ -140,23 +144,31 @@ export default function Map({navigation}) {
   // Fetch user data and set markers on MapView
   const fetchAndSetMarkers = async () => {
     console.log('fecthing markerss');
-    const userData = await fetchGameZoneOwners();
+    const gamezoneData = await fetchGameZoneOwners();
     // Create an array of Marker components based on fetched user data
-    const markers = userData.map(user => {
+    const filteredGamezoneMarker = gamezoneData.filter(gamezone => {
+
+      const distance = getPreciseDistance(
+        { latitude: marker.latitude, longitude: marker.longitude },
+        { latitude: gamezone?.latLng?.lat, longitude: gamezone?.latLng?.lng }
+      );
+      return distance <= circleRadius;
+    });
+    const markers = filteredGamezoneMarker.map(gamezone => {
       return (
         <Marker
-          key={user.id} // Use a unique identifier as the key
-          coordinate={{latitude: user.latLng.lat, longitude: user.latLng.lng}}
-          title={user.name}
-          description={user.tagLine}>
+          key={gamezone.id} // Use a unique identifier as the key
+          coordinate={{ latitude: gamezone.latLng.lat, longitude: gamezone.latLng.lng }}
+          title={gamezone.name}
+          description={gamezone.tagLine}>
           <Icon name="map-marker" size={30} color="#081B33" />
           <Callout
-            style={{width: 200}}
+            style={{ width: 200 }}
             onPress={() =>
-              navigation.navigate('GameZoneProfile', {gameZoneData: user})
+              navigation.navigate('GameZoneProfile', { gameZoneData: gamezone })
             }>
-            <Text >{user.name}</Text>
-            <Text>{user.tagLine}</Text>
+            <Text >{gamezone.name}</Text>
+            <Text>{gamezone.tagLine}</Text>
           </Callout>
         </Marker>
       );
@@ -166,7 +178,7 @@ export default function Map({navigation}) {
   // Call fetchAndSetMarkers to fetch user data and set markers on MapView
   useEffect(() => {
     fetchAndSetMarkers();
-  }, []);
+  }, [marker]);
   return (
     <View style={styles.container}>
       {/* Render our MapView */}
@@ -175,6 +187,13 @@ export default function Map({navigation}) {
           <Icon name="map-marker" size={30} color="red" />
         </Marker>
         {markers}
+        <Circle
+          center={marker}
+          radius={circleRadius}
+          strokeWidth={2}
+          strokeColor="rgba(25,67,30,0.1)"
+          fillColor="rgba(8,27,51,0.1)"
+        />
       </MapView>
       {/* Render a TouchableOpacity button for "Find My Location" */}
       <TouchableOpacity
