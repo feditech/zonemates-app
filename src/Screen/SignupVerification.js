@@ -4,12 +4,10 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
   Image,
   ActivityIndicator,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../store/AuthProvider';
 import { showToast } from '../components/Toast';
@@ -42,6 +40,11 @@ export default function SignupVerification({ route, navigation }) {
     getdata();
   }, [user]);
 
+  function isValidCode(codeTimestamp) {
+    const currentTime = Date.now();
+    const timeDiff = currentTime - codeTimestamp;
+    return timeDiff <= 30 * 60 * 1000;
+  }
   const confirmCode = code => {
     setLoading(true);
     console.log('code', code);
@@ -81,11 +84,7 @@ export default function SignupVerification({ route, navigation }) {
       showToast('error', 'Error', 'code is Invalid');
     }
   };
-  function isValidCode(codeTimestamp) {
-    const currentTime = Date.now();
-    const timeDiff = currentTime - codeTimestamp;
-    return timeDiff <= 30 * 60 * 1000;
-  }
+
 
   const codeResend = () => {
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
@@ -217,29 +216,3 @@ const styles = StyleSheet.create({
     color: '#081B33',
   },
 });
-
-// useEffect(() => {
-//   const sendVerificationCode = async () => {
-//     const confirmation = await auth().verifyPhoneNumber(data.phone);
-//     setConfirm(confirmation);
-//   };
-//   sendVerificationCode();
-// }, []);
-
-// async function confirmCode(code) {
-//   try {
-//     const credential = auth.PhoneAuthProvider.credential(
-//       confirm.verificationId,
-//       code,
-//     );
-//     let userData = await auth().currentUser.linkWithCredential(credential);
-//     setUser(userData.user);
-//     console.log("verified")
-//   } catch (error) {
-//     if (error.code == 'auth/invalid-verification-code') {
-//       console.log('Invalid code.');
-//     } else {
-//       console.log('Account linking error');
-//     }
-//   }
-// }

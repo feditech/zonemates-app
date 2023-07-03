@@ -3,23 +3,22 @@ import { ScrollView, View, Text, StyleSheet, TouchableOpacity, TextInput, Activi
 import firestore from '@react-native-firebase/firestore';
 import { showToast } from '../components/Toast';
 import { AuthContext } from '../store/AuthProvider';
+import moment from 'moment/moment';
+
 const Booking = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
 
-  const profile = useContext(AuthContext)
-  console.log("PRofile", profile.user)
-  const GamerId = profile.user.id
+  const { user, setUser } = useContext(AuthContext);
+  const GamerId = user.id
   const { selectedDate, gameZoneId } = route.params;
-  const parsedDate = new Date(selectedDate);
+  let parsedDate = new Date(selectedDate);
   const day = parsedDate.getDay()
-  const formattedSelectedDate = `${parsedDate.getDate()}/${parsedDate.getMonth() + 1}/${parsedDate.getFullYear()}`;
-
+  parsedDate = moment(parsedDate).format("MM-DD-YYYY");
 
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingPcCount, setBookingPcCount] = useState('');
   const [availableSlots, setAvailableSlots] = useState([])
 
-  console.log("selected slot", selectedSlot)
 
   const getData = () => {
     setLoading(true);
@@ -53,11 +52,9 @@ const Booking = ({ route, navigation }) => {
 
   useEffect(() => {
     getData();
-    console.log("available slots", availableSlots)
   }, []);
   useEffect(() => {
     getData();
-    console.log(", selected slot changed")
   }, []);
   const handleSlotSelect = (slot) => {
     setSelectedSlot(slot);
@@ -65,13 +62,22 @@ const Booking = ({ route, navigation }) => {
 
 
   const handleBookSlot = async () => {
+    setLoading(true)
     if (!selectedSlot) {
       showToast('error', 'Please Select a Slot');
+      setLoading(false)
       return;
     }
 
+    if (bookingPcCount == 0 || bookingPcCount < 0) {
+      showToast('error', 'Please Select valid Number Of PCs');
+      setLoading(false)
+      return;
+
+    }
     if (!bookingPcCount) {
       showToast('error', 'Please Select Number Of PCs');
+      setLoading(false)
       return;
     }
 
@@ -80,6 +86,7 @@ const Booking = ({ route, navigation }) => {
     if (parseInt(bookingPcCount) > parseInt(remainingSlots)) {
       console.log('Cannot book more PCs than available');
       showToast('error', 'Cannot book more PCs than available');
+      setLoading(false)
       return;
     }
 
@@ -90,8 +97,10 @@ const Booking = ({ route, navigation }) => {
         const gameZoneDoc = await transaction.get(gameZoneRef);
         const gamerDoc = await transaction.get(gamerRef);
 
-        const gameZoneSlots = gameZoneDoc.data().slots;
+        const gameZoneData = gameZoneDoc.data();
         const gamerData = gamerDoc.data();
+
+        const gameZoneSlots = gameZoneData.slots;
 
         // Update the remaining slots count in gameZone
         const updatedGameZoneSlots = gameZoneSlots.map((slot) => {
@@ -121,10 +130,11 @@ const Booking = ({ route, navigation }) => {
         const booking = {
           slotTime: time,
           pcCount: bookingPcCount,
-          date: selectedDate,
+          date: parsedDate,
           day: selectedSlot.day,
-          bookingDate: new Date(),
-          bookerName: profile.user.name
+          bookingDate: moment(new Date()).format("MM-DD-YYYY"),
+          bookerName: user.name,
+          zoneName: gameZoneData.zoneName
         };
 
         // Update gamer data with the new booking
@@ -143,6 +153,11 @@ const Booking = ({ route, navigation }) => {
 
         // Update the document with the updated gamer data
         transaction.update(gamerRef, updatedGamerData);
+
+        //updateing gamer context data
+
+        setUser(updatedGamerData)
+
         const updatedSelectedSlot = {
           ...selectedSlot,
           remainingSlots: selectedSlot.remainingSlots - bookingPcCount,
@@ -161,11 +176,13 @@ const Booking = ({ route, navigation }) => {
         getData();
         setSelectedSlot(null);
         setBookingPcCount(null);
+        setLoading(false)
         navigation.replace('home');
         console.log('Booking successful');
       });
     } catch (error) {
       showToast('error', 'Booking Failed', `${error}`);
+      setLoading(false)
       console.log('Error booking slot:', error);
     }
   };

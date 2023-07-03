@@ -8,11 +8,9 @@ export const AuthContext = createContext({
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState(null);
   // Handle user state changes
   async function onAuthStateChanged(user) {
     if (user) {
-      console.log("user ====>", user)
       const userDocument = await firestore().collection('users').doc(user.uid).get();
       const userInfo = userDocument._data
       setUser(userInfo);
@@ -26,7 +24,7 @@ function AuthProvider({ children }) {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  return <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 }
 
 export default AuthProvider;

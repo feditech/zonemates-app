@@ -5,22 +5,17 @@ import {
   View,
   TouchableOpacity,
   PermissionsAndroid,
-  Image,
-  Button,
   Text,
 } from 'react-native';
 import MapView, { Marker, Callout, Circle } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Geolocation from '@react-native-community/geolocation';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
 import firestore from '@react-native-firebase/firestore';
 import { getPreciseDistance } from 'geolib';
-import * as geolib from 'geolib';
 
 export default function Map({ navigation }) {
-  const [circleRadius, setCircleRadius] = useState(30000); // Initial radius of 5 km
+  const [circleRadius, setCircleRadius] = useState(20000); 
   const [region, setRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -34,7 +29,7 @@ export default function Map({ navigation }) {
   });
   const [locationStatus, setLocationStatus] = useState('');
   useEffect(() => {
-    console.log('use Effect');
+ 
     const requestLocationPermission = async () => {
       if (Platform.OS === 'ios') {
         getOneTimeLocation();
@@ -67,7 +62,6 @@ export default function Map({ navigation }) {
   }, []);
 
   const getOneTimeLocation = () => {
-    console.log('here we are');
     setLocationStatus('Getting Location ...');
     Geolocation.getCurrentPosition(
       //Will give you the current location

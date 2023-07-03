@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 const DateSelectionScreen = ({ route, navigation }) => {
   const { gameZoneId } = route.params;
- console.log( { selectedDate, gameZoneId }) 
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const scaleAnim = useRef(new Animated.Value(0)).current;

@@ -12,7 +12,6 @@ import {
 import firestore from '@react-native-firebase/firestore';
 export default function App({ navigation }) {
   const [owners, setOwners] = useState('');
-
   const fetchGameZoneOwners = async () => {
     try {
       const querySnapshot = await firestore()
@@ -106,9 +105,9 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   mainHeading: {
-    color:'#fff',
+    color: '#fff',
     fontSize: 30,
-    padding:10,
+    padding: 10,
     textAlign: 'center',
     fontWeight: 'bold',
     width: '100%',

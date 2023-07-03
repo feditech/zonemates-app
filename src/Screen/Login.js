@@ -29,6 +29,11 @@ const loginValidationSchema = yup.object().shape({
 });
 
 export default function Login({ navigation }) {
+
+
+
+
+
   var Logo = require('../../assets/Icons/whitelogo.png');
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
@@ -136,6 +141,12 @@ export default function Login({ navigation }) {
               <Text style={{ color: '#fff' }}>Don't Have an Account?</Text>
               <TouchableOpacity onPress={() => navigation.navigate('signup')}>
                 <Text style={styles.signupLink}> Signup Here </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.bottomText}>
+            
+              <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordScreen')}>
+                <Text style={styles.signupLink}> Forgot Password? </Text>
               </TouchableOpacity>
             </View>
           </>
